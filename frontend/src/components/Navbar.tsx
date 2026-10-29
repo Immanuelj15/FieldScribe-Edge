@@ -1,0 +1,106 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Activity, Plus, LayoutDashboard, History, Sparkles, Cpu } from 'lucide-react';
+import { fetchHealth } from '../services/api';
+import { HealthStatus } from '../types/clinical';
+
+export const Navbar: React.FC = () => {
+  const location = useLocation();
+  const [health, setHealth] = useState<HealthStatus | null>(null);
+
+  useEffect(() => {
+    fetchHealth()
+      .then((data) => setHealth(data))
+      .catch((err) => console.warn('Health check warning:', err));
+  }, []);
+
+  const navLinks = [
+    { to: '/', label: 'Overview' },
+    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/create', label: 'Create Note', icon: Plus },
+    { to: '/history', label: 'Record History', icon: History },
+  ];
+
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
+  const isCloudNebius = health?.nebius_integration?.api_key_configured;
+
+  return (
+    <header className="sticky top-0 z-40 bg-[#090e1c]/90 backdrop-blur-md border-b border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        
+        {/* Brand */}
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+            <Activity className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-lg text-white tracking-tight">
+                FieldScribe <span className="text-cyan-400">Edge</span>
+              </span>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/80">
+                NVIDIA 2026
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 font-mono hidden sm:block">
+              Voice-to-Structured Clinical Records
+            </p>
+          </div>
+        </Link>
+
+        {/* Navigation links */}
+        <nav className="hidden md:flex items-center gap-1">
+          {navLinks.map((item) => {
+            const active = isActive(item.to);
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  active
+                    ? 'bg-slate-800 text-cyan-300 border border-slate-700'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                }`}
+              >
+                {item.icon && <item.icon className="w-4 h-4" />}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right side: AI Engine Indicator & New Note button */}
+        <div className="flex items-center gap-3">
+          {/* Engine indicator */}
+          <div
+            title={`Configured Model: ${health?.nebius_integration?.configured_model || 'nvidia/Llama-3.1-Nemotron-70B'}\nEndpoint: ${health?.nebius_integration?.api_endpoint || 'api.studio.nebius.ai'}`}
+            className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-xs text-slate-300 cursor-default"
+          >
+            <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-slate-400">Engine:</span>
+            <span className="font-mono text-cyan-300 font-medium truncate max-w-[150px]">
+              {isCloudNebius ? 'Nebius Cloud' : 'NVIDIA Nemotron (Local)'}
+            </span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isCloudNebius ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400'
+              }`}
+            />
+          </div>
+
+          <Link
+            to="/create"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium text-sm shadow-md shadow-cyan-500/20 transition-all hover:shadow-cyan-500/40"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Create Note</span>
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+};
