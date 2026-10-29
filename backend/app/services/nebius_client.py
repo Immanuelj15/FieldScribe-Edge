@@ -203,14 +203,45 @@ Extract all medications, dosages, routes, procedures, timestamps, explicit obser
                 response.raise_for_status()
                 data = response.json()
                 
-                content = data["choices"][0]["message"]["content"]
+                content = data["choices"][0]["message"]["content"].strip()
+                # Strip markdown code fences if model enclosed JSON
+                if content.startswith("```json"):
+                    content = content[7:]
+                elif content.startswith("```"):
+                    content = content[3:]
+                if content.endswith("```"):
+                    content = content[:-3]
+                content = content.strip()
+                
                 parsed_json = json.loads(content)
                 
-                # Normalize extracted fields
-                meds = [MedicationItem(**m) for m in parsed_json.get("medications", [])]
-                procs = [ProcedureItem(**p) for p in parsed_json.get("procedures", [])]
-                obs = parsed_json.get("observations", [])
-                missing = parsed_json.get("missing_information", [])
+                # Normalize extracted fields safely
+                meds = []
+                for m in parsed_json.get("medications", []):
+                    if isinstance(m, dict) and m.get("name"):
+                        meds.append(MedicationItem(
+                            name=str(m["name"]),
+                            dosage=str(m["dosage"]) if m.get("dosage") else None,
+                            route=str(m["route"]) if m.get("route") else None,
+                            timestamp=str(m["timestamp"]) if m.get("timestamp") else None,
+                            source_text=str(m["source_text"]) if m.get("source_text") else None
+                        ))
+                    elif isinstance(m, str) and m.strip():
+                        meds.append(MedicationItem(name=m.strip()))
+
+                procs = []
+                for p in parsed_json.get("procedures", []):
+                    if isinstance(p, dict) and p.get("name"):
+                        procs.append(ProcedureItem(
+                            name=str(p["name"]),
+                            timestamp=str(p["timestamp"]) if p.get("timestamp") else None,
+                            source_text=str(p["source_text"]) if p.get("source_text") else None
+                        ))
+                    elif isinstance(p, str) and p.strip():
+                        procs.append(ProcedureItem(name=p.strip()))
+
+                obs = [str(o) for o in parsed_json.get("observations", []) if o]
+                missing = [str(x) for x in parsed_json.get("missing_information", []) if x]
                 ts = parsed_json.get("event_timestamp") or event_timestamp
                 conf = parsed_json.get("extraction_confidence", 0.96)
 

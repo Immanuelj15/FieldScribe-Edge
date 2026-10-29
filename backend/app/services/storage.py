@@ -249,6 +249,7 @@ def update_record(record_id: str, updates: Dict) -> Optional[ClinicalRecord]:
     if "reviewer_notes" in updates and updates["reviewer_notes"] is not None:
         rec.reviewer_notes = updates["reviewer_notes"]
         
+    rec.human_edited = True
     rec.updated_at = now_iso
     save_storage()
     return rec
