@@ -109,3 +109,4 @@ export async function exportRecord(recordId: string, format: 'json' | 'fhir' | '
   }
   return res.json();
 }
+

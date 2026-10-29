@@ -577,3 +577,4 @@ export const RecordDetailPage: React.FC = () => {
     </div>
   );
 };
+

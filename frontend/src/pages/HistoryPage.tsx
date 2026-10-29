@@ -181,3 +181,4 @@ export const HistoryPage: React.FC = () => {
     </div>
   );
 };
+

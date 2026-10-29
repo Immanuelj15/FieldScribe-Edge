@@ -250,3 +250,4 @@ FieldScribe Edge introduces an edge-first documentation workflow:
 ## 📄 10. License
 
 This project is open-source under the [MIT License](LICENSE).
+

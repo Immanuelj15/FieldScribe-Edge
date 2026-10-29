@@ -66,3 +66,4 @@ class UpdateRecordRequest(BaseModel):
 
 class ConfirmRecordRequest(BaseModel):
     reviewer_notes: Optional[str] = None
+

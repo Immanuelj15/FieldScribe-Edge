@@ -17,3 +17,4 @@ Write-Host "API Backend Docs:   http://127.0.0.1:8000/docs" -ForegroundColor Gra
 Write-Host "Frontend App:       http://localhost:5173" -ForegroundColor Cyan
 Write-Host "Press Enter to exit this launcher window." -ForegroundColor Yellow
 Read-Host
+

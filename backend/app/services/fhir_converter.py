@@ -210,3 +210,4 @@ def generate_readable_clinical_note(record: ClinicalRecord) -> str:
     ])
 
     return "\n".join(lines)
+

@@ -267,3 +267,4 @@ def confirm_record(record_id: str, reviewer_notes: Optional[str] = None) -> Opti
         rec.reviewer_notes = reviewer_notes
     save_storage()
     return rec
+

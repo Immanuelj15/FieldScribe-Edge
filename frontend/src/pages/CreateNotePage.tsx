@@ -331,3 +331,4 @@ export const CreateNotePage: React.FC = () => {
     </div>
   );
 };
+

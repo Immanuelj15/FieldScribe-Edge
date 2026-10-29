@@ -54,3 +54,4 @@ export interface HealthStatus {
   target_hackathon: string;
   supported_features: string[];
 }
+

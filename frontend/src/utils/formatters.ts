@@ -36,3 +36,4 @@ export function downloadFile(content: string, filename: string, type: string = '
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
