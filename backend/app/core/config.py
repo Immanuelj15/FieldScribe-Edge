@@ -1,17 +1,26 @@
 import os
-from typing import List
+from typing import List, Literal
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "FieldScribe Edge"
-    VERSION: str = "1.0.0"
-    DESCRIPTION: str = "Voice-to-Structured Clinical Note Generator for First Responders (Nebius x NVIDIA Global AI Hackathon 2026)"
+    VERSION: str = "1.1.0"
+    DESCRIPTION: str = "Voice-to-Structured Clinical Note Generator for First Responders (Ollama & Nebius with NVIDIA Models)"
     
+    # Active AI Provider: "ollama" | "nebius" | "demo"
+    AI_PROVIDER: str = Field(default="ollama", env="AI_PROVIDER")
+
+    # Ollama Local Configuration
+    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434", env="OLLAMA_BASE_URL")
+    OLLAMA_MODEL: str = Field(default="nemotron", env="OLLAMA_MODEL")
+    OLLAMA_TIMEOUT: float = Field(default=120.0, env="OLLAMA_TIMEOUT")
+
     # Nebius Token Factory Configuration
     NEBIUS_API_KEY: str = Field(default="", env="NEBIUS_API_KEY")
     NEBIUS_BASE_URL: str = Field(default="https://api.studio.nebius.ai/v1", env="NEBIUS_BASE_URL")
     NEBIUS_MODEL: str = Field(default="nvidia/Llama-3.1-Nemotron-70B-Instruct-HF", env="NEBIUS_MODEL")
+    NEBIUS_TIMEOUT: float = Field(default=45.0, env="NEBIUS_TIMEOUT")
     
     # Host & Port
     HOST: str = "127.0.0.1"
@@ -29,4 +38,3 @@ class Settings(BaseSettings):
         extra = "ignore"
 
 settings = Settings()
-

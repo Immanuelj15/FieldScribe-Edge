@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   FileJson,
   Cpu,
-  AlertCircle
+  AlertCircle,
+  HardDrive
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -171,9 +172,9 @@ export const LandingPage: React.FC = () => {
               <Brain className="w-6 h-6" />
             </div>
             <div className="text-xs font-mono text-blue-400 font-semibold mb-1">STEP 02</div>
-            <h4 className="text-base font-bold text-white mb-2">Nebius + NVIDIA Model</h4>
+            <h4 className="text-base font-bold text-white mb-2">Ollama or Nebius AI</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Nebius Token Factory calls NVIDIA Nemotron-70B to isolate medications, dosages, routes, timestamps, and procedures.
+              Infers with local NVIDIA Nemotron-Mini via Ollama or at scale with Nebius Token Factory to isolate clinical entities.
             </p>
           </div>
 
@@ -208,34 +209,43 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-cyan-400 mb-2">
               <Cpu className="w-4 h-4" />
-              <span>NVIDIA & Nebius Infrastructure</span>
+              <span>Multi-Provider AI Architecture</span>
             </div>
-            <h3 className="text-3xl font-bold text-white tracking-tight">Enterprise Infrastructure for Critical Care</h3>
+            <h3 className="text-3xl font-bold text-white tracking-tight">Flexible Local & Cloud Inference for Critical Care</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
-              <div className="text-cyan-400 text-sm font-semibold mb-2">Nebius Token Factory API</div>
-              <h4 className="text-lg font-bold text-white mb-2">Ultra-Fast GPU Inference</h4>
+              <div className="flex items-center gap-2 text-cyan-400 text-sm font-semibold mb-2">
+                <HardDrive className="w-4 h-4" />
+                <span>Local Ollama Provider</span>
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">Privacy & Edge Autonomy</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Connects through Nebius Token Factory with OpenAI-compatible streaming and JSON mode endpoints, ensuring sub-second token delivery for urgent medical scenarios.
+                Connects to local Ollama daemon for offline field use on paramedic laptops, running lightweight NVIDIA Nemotron-Mini or Llama models with zero cloud dependency.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
-              <div className="text-cyan-400 text-sm font-semibold mb-2">NVIDIA Open-Source LLMs</div>
-              <h4 className="text-lg font-bold text-white mb-2">NVIDIA Nemotron-70B-Instruct</h4>
+              <div className="flex items-center gap-2 text-cyan-400 text-sm font-semibold mb-2">
+                <Cpu className="w-4 h-4" />
+                <span>Nebius Token Factory</span>
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">NVIDIA Nemotron-70B Cloud</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Harnessing state-of-the-art open weights optimized by NVIDIA for reasoning and strict schema adherence, preventing the fabrication of dosages or patient diagnoses.
+                Connects through Nebius Token Factory API with enterprise GPU acceleration, delivering sub-second inference and deep medical entity reasoning.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
-              <div className="text-cyan-400 text-sm font-semibold mb-2">Pydantic Validation Engine</div>
-              <h4 className="text-lg font-bold text-white mb-2">Deterministic Guardrails</h4>
+              <div className="flex items-center gap-2 text-cyan-400 text-sm font-semibold mb-2">
+                <FileJson className="w-4 h-4" />
+                <span>Pydantic Validation Guard</span>
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">Zero-Hallucination Guardrails</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Model output is intercepted and validated against strict schemas before reaching the UI. If a key is missing, it is flagged as an explicit warning, never hallucinated.
+                Every extracted entity is validated against strict Pydantic schemas. Unstated routes or times are flagged as missing documentation rather than guessed.
               </p>
             </div>
 
@@ -263,4 +273,3 @@ export const LandingPage: React.FC = () => {
     </div>
   );
 };
-

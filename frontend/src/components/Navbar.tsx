@@ -26,7 +26,28 @@ export const Navbar: React.FC = () => {
     return location.pathname.startsWith(path);
   };
 
-  const isCloudNebius = health?.nebius_integration?.api_key_configured;
+  const provider = health?.provider || 'ollama';
+  let engineLabel = 'AI Engine';
+  let engineStatusDot = 'bg-cyan-400';
+  let engineTooltip = '';
+
+  if (provider === 'ollama') {
+    const isAvailable = health?.ollama?.available;
+    const model = health?.ollama?.model || 'nemotron-mini';
+    engineLabel = isAvailable ? `Ollama: ${model}` : `Ollama: Offline`;
+    engineStatusDot = isAvailable ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400';
+    engineTooltip = `Provider: Ollama Local\nModel: ${model}\nStatus: ${isAvailable ? 'Connected to local daemon' : 'Daemon unreachable (run "ollama serve")'}\nEndpoint: ${health?.ollama?.base_url || 'http://localhost:11434'}`;
+  } else if (provider === 'nebius') {
+    const isConfigured = health?.nebius?.api_key_configured;
+    const model = health?.nebius?.configured_model || 'Nemotron-70B';
+    engineLabel = isConfigured ? 'Nebius Cloud' : 'Nebius (No Key)';
+    engineStatusDot = isConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400';
+    engineTooltip = `Provider: Nebius Token Factory Cloud\nModel: ${model}\nStatus: ${isConfigured ? 'API Key Configured' : 'Missing NEBIUS_API_KEY'}\nEndpoint: ${health?.nebius?.api_endpoint || 'api.studio.nebius.ai'}`;
+  } else {
+    engineLabel = 'Demo Safe-Engine';
+    engineStatusDot = 'bg-blue-400';
+    engineTooltip = 'Provider: Local Deterministic Rule-Based Engine (Demo Mode)';
+  }
 
   return (
     <header className="sticky top-0 z-40 bg-[#090e1c]/90 backdrop-blur-md border-b border-slate-800">
@@ -77,18 +98,16 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center gap-3">
           {/* Engine indicator */}
           <div
-            title={`Configured Model: ${health?.nebius_integration?.configured_model || 'nvidia/Llama-3.1-Nemotron-70B'}\nEndpoint: ${health?.nebius_integration?.api_endpoint || 'api.studio.nebius.ai'}`}
-            className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-xs text-slate-300 cursor-default"
+            title={engineTooltip}
+            className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-xs text-slate-300 cursor-help transition-all hover:border-cyan-500/50"
           >
             <Cpu className="w-3.5 h-3.5 text-cyan-400" />
             <span className="text-slate-400">Engine:</span>
-            <span className="font-mono text-cyan-300 font-medium truncate max-w-[150px]">
-              {isCloudNebius ? 'Nebius Cloud' : 'NVIDIA Nemotron (Local)'}
+            <span className="font-mono text-cyan-300 font-medium truncate max-w-[160px]">
+              {engineLabel}
             </span>
             <span
-              className={`w-2 h-2 rounded-full ${
-                isCloudNebius ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400'
-              }`}
+              className={`w-2 h-2 rounded-full ${engineStatusDot}`}
             />
           </div>
 
@@ -104,4 +123,3 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
-

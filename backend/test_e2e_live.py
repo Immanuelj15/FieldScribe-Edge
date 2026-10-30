@@ -6,22 +6,25 @@ from app.core.config import settings
 
 async def verify_e2e_workflow():
     print("=" * 65)
-    print(" FIELDSCRIBE EDGE — END-TO-END WORKFLOW INTEGRITY TEST")
+    print(" FIELDSCRIBE EDGE - END-TO-END WORKFLOW INTEGRITY TEST")
     print("=" * 65)
+
+    original_provider = settings.AI_PROVIDER
+    settings.AI_PROVIDER = "demo"
 
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://127.0.0.1:8000") as client:
         
         # 1. Health & Config Verification
-        print("\n[Step 1] Verifying Backend Health & Nebius Config...")
+        print("\n[Step 1] Verifying Backend Health & Provider Config...")
         res = await client.get("/health")
         assert res.status_code == 200, f"Health check failed: {res.status_code}"
         health = res.json()
         print(f" Status: {health['status']}")
-        print(f" Engine Mode: {health['nebius_integration']['mode']}")
-        print(f" Target Model: {health['nebius_integration']['configured_model']}")
-        print(f" Nebius API Endpoint: {health['nebius_integration']['api_endpoint']}")
-        print(f" API Key Configured: {health['nebius_integration']['api_key_configured']}")
+        print(f" Active Provider: {health['provider']}")
+        print(f" Active Engine: {health['active_engine']}")
+        print(f" Ollama Config: {health['ollama']}")
+        print(f" Nebius API Endpoint: {health['nebius']['api_endpoint']}")
 
         # 2. Extract Note
         test_note = (
@@ -124,6 +127,7 @@ async def verify_e2e_workflow():
         assert "FIELDSCRIBE EDGE" in narrative
         assert "DEMOMED" in narrative.upper()
 
+        settings.AI_PROVIDER = original_provider
         print("\n" + "=" * 65)
         print(" ALL 7 END-TO-END WORKFLOW INTEGRITY CHECKS PASSED 100%!")
         print("=" * 65)

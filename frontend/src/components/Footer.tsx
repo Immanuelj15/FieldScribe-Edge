@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
                 FieldScribe <span className="text-cyan-400">Edge</span>
               </span>
               <span className="text-xs px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 font-mono">
-                v1.0.0
+                v1.1.0
               </span>
             </div>
             <p className="text-sm text-slate-400 max-w-md leading-relaxed">
@@ -31,10 +31,10 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
-                <span className="text-cyan-400 font-medium">Platform:</span> Nebius Token Factory API
+                <span className="text-cyan-400 font-medium">Local Engine:</span> Ollama (NVIDIA Nemotron-Mini)
               </li>
               <li>
-                <span className="text-cyan-400 font-medium">Model:</span> NVIDIA Nemotron-70B-Instruct
+                <span className="text-cyan-400 font-medium">Cloud Engine:</span> Nebius Token Factory (Nemotron-70B)
               </li>
               <li>
                 <span className="text-cyan-400 font-medium">Validation:</span> Pydantic Strict Schemas
@@ -64,7 +64,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <p>© 2026 FieldScribe Edge. Nebius x NVIDIA Hackathon Submission.</p>
+          <p>© 2026 FieldScribe Edge. Nebius x NVIDIA Hackathon Project.</p>
           <p className="text-slate-400">
             Documentation Assistant Prototype. Not certified for diagnostic or clinical treatment decisions.
           </p>
@@ -73,4 +73,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-

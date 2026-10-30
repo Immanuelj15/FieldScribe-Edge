@@ -1,10 +1,15 @@
 import asyncio
 import json
 from app.main import app
+from app.core.config import settings
 from app.schemas.clinical import ExtractRequest, CreateRecordRequest, UpdateRecordRequest, ConfirmRecordRequest
 from httpx import AsyncClient, ASGITransport
 
 async def run_tests():
+    # Save original provider and use demo for baseline CRUD/export pipeline verification
+    original_provider = settings.AI_PROVIDER
+    settings.AI_PROVIDER = "demo"
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         print("\n--- 1. Testing GET / ---")
@@ -91,8 +96,9 @@ async def run_tests():
         assert r.status_code == 200
         assert "FIELDSCRIBE EDGE" in r.text
 
+        # Restore original provider
+        settings.AI_PROVIDER = original_provider
         print("\n ALL BACKEND TESTS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":
     asyncio.run(run_tests())
-

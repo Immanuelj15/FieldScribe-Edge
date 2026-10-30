@@ -44,7 +44,23 @@ export interface ClinicalRecord {
 export interface HealthStatus {
   status: string;
   version: string;
-  nebius_integration: {
+  provider?: 'ollama' | 'nebius' | 'demo' | string;
+  active_engine?: string;
+  ollama?: {
+    available: boolean;
+    base_url: string;
+    model: string;
+    model_installed?: boolean;
+    installed_models?: string[];
+    error?: string;
+  };
+  nebius?: {
+    api_endpoint: string;
+    configured_model: string;
+    api_key_configured: boolean;
+    api_key_masked: string;
+  };
+  nebius_integration?: {
     api_endpoint: string;
     configured_model: string;
     api_key_configured: boolean;
@@ -54,4 +70,3 @@ export interface HealthStatus {
   target_hackathon: string;
   supported_features: string[];
 }
-

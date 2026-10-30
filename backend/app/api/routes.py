@@ -10,7 +10,7 @@ from app.schemas.clinical import (
     UpdateRecordRequest,
     ConfirmRecordRequest
 )
-from app.services.nebius_client import extract_clinical_data
+from app.services.ai_service import dispatch_extract_note, get_ai_service_status
 from app.services.storage import (
     list_records,
     get_record,
@@ -29,6 +29,7 @@ async def root():
         "name": settings.PROJECT_NAME,
         "version": settings.VERSION,
         "status": "online",
+        "provider": settings.AI_PROVIDER,
         "description": settings.DESCRIPTION,
         "hackathon": "Nebius x NVIDIA Global AI Hackathon 2026"
     }
@@ -38,23 +39,22 @@ async def health_check():
     """
     Returns health status and AI engine configuration without exposing secrets.
     """
-    has_api_key = bool(settings.NEBIUS_API_KEY and settings.NEBIUS_API_KEY.strip())
-    masked_key = f"{settings.NEBIUS_API_KEY[:4]}...{settings.NEBIUS_API_KEY[-4:]}" if has_api_key and len(settings.NEBIUS_API_KEY) > 8 else ("Configured" if has_api_key else "Not Set")
+    ai_status = await get_ai_service_status()
 
     return {
         "status": "healthy",
         "version": settings.VERSION,
-        "nebius_integration": {
-            "api_endpoint": settings.NEBIUS_BASE_URL,
-            "configured_model": settings.NEBIUS_MODEL,
-            "api_key_configured": has_api_key,
-            "api_key_masked": masked_key if has_api_key else "None (Running Local Demo Engine)",
-            "mode": "Nebius Token Factory Cloud" if has_api_key else "Local Demo Safe-Engine"
-        },
+        "provider": ai_status["provider"],
+        "active_engine": ai_status["active_engine"],
+        "ollama": ai_status["ollama"],
+        "nebius": ai_status["nebius"],
+        # Backwards compatible block for older frontend versions & tests:
+        "nebius_integration": ai_status["nebius_integration"],
         "target_hackathon": "Nebius x NVIDIA Global AI Hackathon 2026",
         "supported_features": [
             "Voice-to-Text via Web Speech API",
-            "NVIDIA Open-Source Model Clinical Extraction",
+            "Local Ollama Inference (NVIDIA Nemotron-Mini / Open Models)",
+            "Nebius Token Factory Cloud API Inference",
             "Pydantic Validation & Missing Information Flags",
             "Human-in-the-Loop Review & Attestation",
             "FHIR-Lite & Narrative Note Export"
@@ -75,17 +75,19 @@ async def transcribe_note():
 async def extract_note(req: ExtractRequest):
     """
     Accepts typed or transcribed emergency medical note.
-    Processes via Nebius Token Factory with an NVIDIA open-source model.
+    Processes via the configured AI provider (Ollama, Nebius, or Demo).
     Returns validated structured extraction with missing information flags.
     """
     if not req.text or not req.text.strip():
         raise HTTPException(status_code=400, detail="Source note text cannot be empty.")
     
     try:
-        extraction = await extract_clinical_data(req.text, req.event_timestamp)
+        extraction = await dispatch_extract_note(req.text, req.event_timestamp)
         return extraction
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Extraction failed: {e}")
+        logger.error(f"Extraction failed with unexpected error: {e}")
         raise HTTPException(status_code=500, detail=f"AI extraction error: {str(e)}")
 
 @router.get("/api/records", response_model=List[ClinicalRecord])
@@ -159,4 +161,3 @@ async def export_record(
     else:
         # Default JSON export
         return rec.model_dump()
-

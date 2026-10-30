@@ -11,10 +11,13 @@ import {
   Volume2,
   CheckCircle2,
   Cpu,
-  ArrowRight
+  ArrowRight,
+  Terminal,
+  HelpCircle
 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
-import { extractNote, createRecord } from '../services/api';
+import { extractNote, createRecord, fetchHealth } from '../services/api';
+import { HealthStatus } from '../types/clinical';
 
 const PRESET_SCENARIOS = [
   {
@@ -41,6 +44,11 @@ export const CreateNotePage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processingStep, setProcessingStep] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [health, setHealth] = useState<HealthStatus | null>(null);
+
+  useEffect(() => {
+    fetchHealth().then(setHealth).catch(() => {});
+  }, []);
 
   const {
     isListening,
@@ -90,18 +98,22 @@ export const CreateNotePage: React.FC = () => {
     setIsProcessing(true);
     setErrorMessage(null);
 
+    const providerName = health?.provider === 'ollama'
+      ? `Local Ollama (${health?.ollama?.model || 'nemotron-mini'})`
+      : (health?.provider === 'nebius' ? 'Nebius Token Factory (NVIDIA Nemotron-70B)' : 'Deterministic Demo Engine');
+
     try {
       // Step 1
       setProcessingStep('Transcribing & normalizing audio / text input...');
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise((r) => setTimeout(r, 350));
 
       // Step 2
-      setProcessingStep('Sending to Nebius Token Factory (NVIDIA Nemotron-70B)...');
+      setProcessingStep(`Sending to ${providerName}...`);
       const extraction = await extractNote(inputText, eventTime || undefined);
 
       // Step 3
       setProcessingStep('Executing Pydantic schema validation & zero-hallucination guard...');
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise((r) => setTimeout(r, 350));
 
       // Step 4: Persist draft record
       setProcessingStep('Creating draft clinical record for human review...');
@@ -128,20 +140,36 @@ export const CreateNotePage: React.FC = () => {
     }
   };
 
+  const provider = health?.provider || 'ollama';
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       
       {/* Title */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-          <span>Create Clinical Note</span>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
-            Voice & Text Input
-          </span>
-        </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Dictate via microphone or type your first-responder field notes. AI will extract medications, dosages, routes, procedures, and timestamps with strict zero-hallucination fidelity.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+            <span>Create Clinical Note</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
+              Voice & Text Input
+            </span>
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Dictate via microphone or type your first-responder field notes. AI will extract medications, dosages, routes, procedures, and timestamps with strict zero-hallucination fidelity.
+          </p>
+        </div>
+
+        {/* Current Provider Pill */}
+        <div className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs flex items-center gap-2 text-slate-300">
+          <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="text-slate-400">Provider:</span>
+          <span className="font-semibold text-cyan-300 uppercase">{provider}</span>
+          {provider === 'ollama' && health?.ollama && (
+            <span className={`text-[10px] px-1.5 py-0.5 rounded ${health.ollama.available ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}`}>
+              {health.ollama.available ? 'daemon active' : 'daemon offline'}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Preset Scenarios for rapid 1-click test */}
@@ -253,13 +281,27 @@ export const CreateNotePage: React.FC = () => {
           />
         </div>
 
-        {/* General Error Message */}
+        {/* General Error Message with Actionable Help */}
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-red-950/40 border border-red-800 text-xs text-red-300 flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-            <div>
-              <strong>Extraction Error:</strong> {errorMessage}
+          <div className="p-4 rounded-xl bg-red-950/50 border border-red-800 text-xs text-red-200 space-y-2">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div>
+                <strong>AI Provider Notice:</strong> {errorMessage}
+              </div>
             </div>
+
+            {/* Contextual help for Ollama */}
+            {errorMessage.toLowerCase().includes('ollama') && (
+              <div className="p-2.5 rounded bg-black/40 border border-red-900/60 font-mono text-[11px] text-red-300 space-y-1">
+                <div className="flex items-center gap-1.5 text-cyan-300 font-semibold">
+                  <Terminal className="w-3.5 h-3.5" /> Quick Windows Fix:
+                </div>
+                <div>1. Start local daemon: <code className="text-white bg-slate-800 px-1 py-0.5 rounded">ollama serve</code></div>
+                <div>2. Pull model if needed: <code className="text-white bg-slate-800 px-1 py-0.5 rounded">ollama pull {health?.ollama?.model || 'nemotron-mini'}</code></div>
+                <div>3. Or switch to offline demo in <code className="text-white">backend/.env</code>: <code className="text-white bg-slate-800 px-1 py-0.5 rounded">AI_PROVIDER=demo</code></div>
+              </div>
+            )}
           </div>
         )}
 
@@ -307,7 +349,7 @@ export const CreateNotePage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-white">
-                Nebius Token Factory & NVIDIA Engine Processing
+                {provider === 'ollama' ? 'Local Ollama & NVIDIA Model' : (provider === 'nebius' ? 'Nebius Token Factory & NVIDIA Engine' : 'Deterministic Demo Safe-Engine')}
               </h3>
               <p className="text-xs text-cyan-300 font-mono mt-0.5">
                 {processingStep}
@@ -321,8 +363,8 @@ export const CreateNotePage: React.FC = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-400 font-mono">
             <div>✓ Voice/Text Ingested</div>
-            <div>⚡ Nebius Token Factory</div>
-            <div>🧠 NVIDIA Nemotron-70B</div>
+            <div>⚡ {provider === 'ollama' ? 'Ollama Daemon' : (provider === 'nebius' ? 'Nebius API' : 'Demo Engine')}</div>
+            <div>🧠 {provider === 'ollama' ? (health?.ollama?.model || 'nemotron-mini') : (provider === 'nebius' ? 'Nemotron-70B' : 'Fidelity Guard')}</div>
             <div>🛡️ Pydantic Validation</div>
           </div>
         </div>
@@ -331,4 +373,3 @@ export const CreateNotePage: React.FC = () => {
     </div>
   );
 };
-
