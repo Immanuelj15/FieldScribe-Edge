@@ -23,7 +23,7 @@ async def run_tests():
         assert r.status_code == 200
         assert r.json()["status"] == "healthy"
 
-        print("\n--- 3. Testing POST /api/notes/extract (Prompt Example) ---")
+        print("\n--- 3. Testing POST /api/notes/extract ---")
         sample_note = "Patient found conscious after a fall. First responder administered 500 milligrams of a fictional demo medication named DemoMed by oral route at 10:15 AM. A basic wound dressing procedure was performed at 10:20 AM. Patient was reassessed at 10:30 AM."
         r = await client.post("/api/notes/extract", json={"text": sample_note, "event_timestamp": "10:15 AM"})
         print("Status:", r.status_code)
@@ -38,19 +38,7 @@ async def run_tests():
         assert extracted["medications"][0]["name"].lower() == "demomed"
         assert len(extracted["procedures"]) > 0
 
-        print("\n--- 4. Testing GET /api/records ---")
-        r = await client.get("/api/records")
-        records = r.json()
-        print("Status:", r.status_code, "Count:", len(records))
-        assert r.status_code == 200
-        assert len(records) >= 3
-
-        print("\n--- 5. Testing GET /api/records/FS-DEMO-001 ---")
-        r = await client.get("/api/records/FS-DEMO-001")
-        print("Status:", r.status_code, "ID:", r.json()["record_id"])
-        assert r.status_code == 200
-
-        print("\n--- 6. Testing POST /api/records (create new draft) ---")
+        print("\n--- 4. Testing POST /api/records (create new clinical record) ---")
         r = await client.post("/api/records", json={
             "source_note": sample_note,
             "event_timestamp": "10:15 AM",
@@ -64,6 +52,20 @@ async def run_tests():
         new_id = new_rec["record_id"]
         print("Created record ID:", new_id, "Status:", new_rec["review_status"])
         assert r.status_code == 200
+        assert new_id.startswith("FS-REC-")
+
+        print("\n--- 5. Testing GET /api/records/{new_id} ---")
+        r = await client.get(f"/api/records/{new_id}")
+        print("Status:", r.status_code, "ID:", r.json()["record_id"])
+        assert r.status_code == 200
+        assert r.json()["record_id"] == new_id
+
+        print("\n--- 6. Testing GET /api/records ---")
+        r = await client.get("/api/records")
+        records = r.json()
+        print("Status:", r.status_code, "Count:", len(records))
+        assert r.status_code == 200
+        assert len(records) >= 1
 
         print("\n--- 7. Testing PATCH /api/records/{new_id} (Human review edit) ---")
         r = await client.patch(f"/api/records/{new_id}", json={

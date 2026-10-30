@@ -10,143 +10,22 @@ DATA_FILE = os.path.join(DATA_DIR, "records.json")
 # In-memory record store
 _records_store: Dict[str, ClinicalRecord] = {}
 
-SEED_RECORDS: List[Dict] = [
-    {
-        "record_id": "FS-DEMO-001",
-        "event_timestamp": "10:15 AM",
-        "source_note": "Patient found conscious after a fall. First responder administered 500 milligrams of a fictional demo medication named DemoMed by oral route at 10:15 AM. A basic wound dressing procedure was performed at 10:20 AM. Patient was reassessed at 10:30 AM.",
-        "medications": [
-            {
-                "name": "DemoMed",
-                "dosage": "500 milligrams",
-                "route": "oral",
-                "timestamp": "10:15 AM",
-                "source_text": "administered 500 milligrams of a fictional demo medication named DemoMed by oral route at 10:15 AM"
-            }
-        ],
-        "procedures": [
-            {
-                "name": "basic wound dressing",
-                "timestamp": "10:20 AM",
-                "source_text": "basic wound dressing procedure was performed at 10:20 AM"
-            }
-        ],
-        "observations": [
-            "Patient found conscious after a fall",
-            "Patient was reassessed at 10:30 AM"
-        ],
-        "missing_information": [
-            "No secondary vital signs (BP, SpO2) recorded in verbatim note"
-        ],
-        "review_status": "confirmed",
-        "extraction_confidence": 0.98,
-        "model_used": "Nebius Token Factory (nvidia/Llama-3.1-Nemotron-70B-Instruct-HF)",
-        "created_at": "2026-10-29T10:32:00Z",
-        "updated_at": "2026-10-29T10:35:12Z",
-        "confirmed_at": "2026-10-29T10:35:12Z",
-        "reviewer_notes": "Verified dosages and times against field dispatch logs. All accurate.",
-        "human_edited": True
-    },
-    {
-        "record_id": "FS-DEMO-002",
-        "event_timestamp": "14:05",
-        "source_note": "En route to severe allergic reaction. Administered 0.3 mg Epinephrine auto-injector by intramuscular route in right thigh at 14:05. High-flow oxygen via non-rebreather mask applied at 14:08. Wheezing decreased by 14:15.",
-        "medications": [
-            {
-                "name": "Epinephrine auto-injector",
-                "dosage": "0.3 mg",
-                "route": "intramuscular (right thigh)",
-                "timestamp": "14:05",
-                "source_text": "Administered 0.3 mg Epinephrine auto-injector by intramuscular route in right thigh at 14:05"
-            }
-        ],
-        "procedures": [
-            {
-                "name": "High-flow oxygen via non-rebreather mask",
-                "timestamp": "14:08",
-                "source_text": "High-flow oxygen via non-rebreather mask applied at 14:08"
-            }
-        ],
-        "observations": [
-            "En route to severe allergic reaction",
-            "Wheezing decreased by 14:15"
-        ],
-        "missing_information": [
-            "Oxygen flow rate in LPM omitted from source note"
-        ],
-        "review_status": "reviewed",
-        "extraction_confidence": 0.95,
-        "model_used": "Nebius Token Factory (nvidia/Llama-3.1-Nemotron-70B-Instruct-HF)",
-        "created_at": "2026-10-29T14:18:00Z",
-        "updated_at": "2026-10-29T14:22:00Z",
-        "confirmed_at": None,
-        "reviewer_notes": "Reviewed with attending paramedic. Awaiting physician sign-off.",
-        "human_edited": False
-    },
-    {
-        "record_id": "FS-DEMO-003",
-        "event_timestamp": "18:40",
-        "source_note": "Adult male experiencing chest tightness. Gave 324 mg chewable Aspirin orally at 18:40. 12-lead ECG procedure was performed at 18:45 showing sinus tachycardia. Nitroglycerin 0.4 mg sublingual administered at 18:48.",
-        "medications": [
-            {
-                "name": "Aspirin (chewable)",
-                "dosage": "324 mg",
-                "route": "oral",
-                "timestamp": "18:40",
-                "source_text": "Gave 324 mg chewable Aspirin orally at 18:40"
-            },
-            {
-                "name": "Nitroglycerin",
-                "dosage": "0.4 mg",
-                "route": "sublingual",
-                "timestamp": "18:48",
-                "source_text": "Nitroglycerin 0.4 mg sublingual administered at 18:48"
-            }
-        ],
-        "procedures": [
-            {
-                "name": "12-lead ECG",
-                "timestamp": "18:45",
-                "source_text": "12-lead ECG procedure was performed at 18:45"
-            }
-        ],
-        "observations": [
-            "Adult male experiencing chest tightness",
-            "ECG showed sinus tachycardia"
-        ],
-        "missing_information": [
-            "Blood pressure reading prior to Nitroglycerin not explicitly stated in note"
-        ],
-        "review_status": "pending",
-        "extraction_confidence": 0.94,
-        "model_used": "Nebius Token Factory (nvidia/Llama-3.1-Nemotron-70B-Instruct-HF)",
-        "created_at": "2026-10-29T18:52:00Z",
-        "updated_at": "2026-10-29T18:52:00Z",
-        "confirmed_at": None,
-        "reviewer_notes": None,
-        "human_edited": False
-    }
-]
-
 def init_storage():
-    """Initializes persistent storage and seeds if empty."""
+    """Initializes persistent storage without any hardcoded demo data."""
     os.makedirs(DATA_DIR, exist_ok=True)
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
+                _records_store.clear()
                 for item in data:
                     rec = ClinicalRecord(**item)
                     _records_store[rec.record_id] = rec
-                if _records_store:
-                    return
+                return
         except Exception:
             pass
 
-    # Seed default demo records
-    for raw in SEED_RECORDS:
-        rec = ClinicalRecord(**raw)
-        _records_store[rec.record_id] = rec
+    _records_store.clear()
     save_storage()
 
 def save_storage():
@@ -188,16 +67,16 @@ def create_record(data: Dict) -> ClinicalRecord:
     init_storage()
     now_iso = datetime.utcnow().isoformat() + "Z"
     
-    # Generate sequential unique record ID
+    # Generate sequential unique record ID: FS-REC-001, FS-REC-002, etc.
     existing_nums = []
     for r_id in _records_store.keys():
-        if r_id.startswith("FS-DEMO-"):
+        if r_id.startswith("FS-"):
             try:
-                existing_nums.append(int(r_id.split("-")[2]))
+                existing_nums.append(int(r_id.split("-")[-1]))
             except ValueError:
                 pass
     next_num = (max(existing_nums) + 1) if existing_nums else 1
-    record_id = f"FS-DEMO-{next_num:03d}"
+    record_id = f"FS-REC-{next_num:03d}"
 
     rec = ClinicalRecord(
         record_id=record_id,
@@ -208,7 +87,7 @@ def create_record(data: Dict) -> ClinicalRecord:
         observations=data.get("observations", []),
         missing_information=data.get("missing_information", []),
         review_status=data.get("review_status", "pending"),
-        extraction_confidence=data.get("extraction_confidence", 0.92),
+        extraction_confidence=data.get("extraction_confidence", 0.95),
         model_used=data.get("model_used"),
         created_at=now_iso,
         updated_at=now_iso,
@@ -248,8 +127,8 @@ def update_record(record_id: str, updates: Dict) -> Optional[ClinicalRecord]:
         rec.review_status = updates["review_status"]
     if "reviewer_notes" in updates and updates["reviewer_notes"] is not None:
         rec.reviewer_notes = updates["reviewer_notes"]
+        rec.human_edited = True
         
-    rec.human_edited = True
     rec.updated_at = now_iso
     save_storage()
     return rec
@@ -264,8 +143,8 @@ def confirm_record(record_id: str, reviewer_notes: Optional[str] = None) -> Opti
     rec.review_status = "confirmed"
     rec.confirmed_at = now_iso
     rec.updated_at = now_iso
+    rec.human_edited = True
     if reviewer_notes:
         rec.reviewer_notes = reviewer_notes
     save_storage()
     return rec
-

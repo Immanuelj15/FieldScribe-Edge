@@ -100,7 +100,7 @@ export const CreateNotePage: React.FC = () => {
 
     const providerName = health?.provider === 'ollama'
       ? `Local Ollama (${health?.ollama?.model || 'nemotron-mini'})`
-      : (health?.provider === 'nebius' ? 'Nebius Token Factory (NVIDIA Nemotron-70B)' : 'Deterministic Demo Engine');
+      : (health?.provider === 'nebius' ? 'Nebius Token Factory (NVIDIA Nemotron-70B)' : 'Deterministic Safe-Engine');
 
     try {
       // Step 1
@@ -148,24 +148,24 @@ export const CreateNotePage: React.FC = () => {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <span>Create Clinical Note</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">
               Voice & Text Input
             </span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Dictate via microphone or type your first-responder field notes. AI will extract medications, dosages, routes, procedures, and timestamps with strict zero-hallucination fidelity.
           </p>
         </div>
 
         {/* Current Provider Pill */}
-        <div className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs flex items-center gap-2 text-slate-300">
-          <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-slate-400">Provider:</span>
-          <span className="font-semibold text-cyan-300 uppercase">{provider}</span>
+        <div className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs text-xs flex items-center gap-2 text-slate-700">
+          <Cpu className="w-3.5 h-3.5 text-blue-600" />
+          <span className="text-slate-500 font-medium">Provider:</span>
+          <span className="font-semibold text-blue-700 uppercase">{provider}</span>
           {provider === 'ollama' && health?.ollama && (
-            <span className={`text-[10px] px-1.5 py-0.5 rounded ${health.ollama.available ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}`}>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${health.ollama.available ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
               {health.ollama.available ? 'daemon active' : 'daemon offline'}
             </span>
           )}
@@ -173,10 +173,10 @@ export const CreateNotePage: React.FC = () => {
       </div>
 
       {/* Preset Scenarios for rapid 1-click test */}
-      <div className="p-4 rounded-2xl bg-[#0b1329] border border-slate-800 space-y-2">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Quick Hackathon Demo Scenarios (1-Click Fill)</span>
+      <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700">
+          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+          <span>Quick Emergency Scenarios (1-Click Fill)</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 pt-1">
           {PRESET_SCENARIOS.map((preset, idx) => (
@@ -184,12 +184,12 @@ export const CreateNotePage: React.FC = () => {
               key={idx}
               type="button"
               onClick={() => handleLoadPreset(preset)}
-              className="text-left p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:border-cyan-500/50 text-xs transition-all group"
+              className="text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-blue-300 text-xs transition-all group"
             >
-              <div className="font-semibold text-slate-200 group-hover:text-cyan-300">
+              <div className="font-semibold text-slate-800 group-hover:text-blue-700">
                 {preset.title}
               </div>
-              <div className="text-[11px] text-slate-400 truncate mt-1">
+              <div className="text-[11px] text-slate-500 truncate mt-1">
                 {preset.text}
               </div>
             </button>
@@ -198,18 +198,18 @@ export const CreateNotePage: React.FC = () => {
       </div>
 
       {/* Main Input Card */}
-      <div className="p-6 rounded-2xl bg-[#0d162d] border border-slate-700/80 shadow-2xl space-y-5">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-5">
         
         {/* Voice control banner */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#090f20] border border-slate-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleToggleListening}
               className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                 isListening
-                  ? 'bg-emergency-red text-white animate-pulse shadow-lg shadow-red-500/30'
-                  : 'bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30'
+                  ? 'bg-red-600 text-white animate-pulse shadow-md shadow-red-500/30'
+                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 shadow-2xs'
               }`}
               title={isListening ? 'Stop Recording' : 'Start Voice Dictation'}
             >
@@ -218,16 +218,16 @@ export const CreateNotePage: React.FC = () => {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white">
+                <span className="text-sm font-semibold text-slate-900">
                   {isListening ? 'Listening to speech...' : 'Web Speech Voice Input'}
                 </span>
                 {isListening && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200 animate-pulse">
                     RECORDING LIVE
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 {isSupported
                   ? 'Click microphone to speak. Emergency terminology and numbers are captured in real-time.'
                   : 'Browser Web Speech API unavailable. Please use the typed input box below.'}
@@ -243,31 +243,31 @@ export const CreateNotePage: React.FC = () => {
               placeholder="Event time (e.g. 10:15 AM)"
               value={eventTime}
               onChange={(e) => setEventTime(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 w-full sm:w-44"
+              className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 w-full sm:w-44 shadow-2xs"
             />
           </div>
         </div>
 
         {/* Interim Speech Indicator */}
         {isListening && interimTranscript && (
-          <div className="p-3 rounded-lg bg-cyan-950/30 border border-cyan-800/40 text-xs text-cyan-300 italic flex items-center gap-2">
-            <Volume2 className="w-4 h-4 animate-bounce text-cyan-400 shrink-0" />
+          <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-900 italic flex items-center gap-2">
+            <Volume2 className="w-4 h-4 animate-bounce text-blue-600 shrink-0" />
             <span>Interim: "{interimTranscript}"</span>
           </div>
         )}
 
         {/* Speech Error Notice */}
         {speechError && (
-          <div className="p-3 rounded-lg bg-amber-950/40 border border-amber-800/50 text-xs text-amber-300 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+          <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
             <span>{speechError}</span>
           </div>
         )}
 
         {/* Text Area */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <label className="font-semibold text-slate-300">
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <label className="font-semibold text-slate-700">
               First Responder Emergency Note (Spoken or Typed):
             </label>
             <span>{inputText.length} characters</span>
@@ -277,15 +277,15 @@ export const CreateNotePage: React.FC = () => {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Dictate or type your field note here... E.g. 'Patient found conscious after a fall. First responder administered 500 milligrams of DemoMed by oral route at 10:15 AM. Wound dressing procedure performed at 10:20 AM.'"
-            className="w-full bg-[#080d1b] border border-slate-700/80 rounded-xl p-4 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-cyan-400 leading-relaxed font-sans"
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl p-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white leading-relaxed font-sans transition-colors"
           />
         </div>
 
         {/* General Error Message with Actionable Help */}
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-red-950/50 border border-red-800 text-xs text-red-200 space-y-2">
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-900 space-y-2">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <div>
                 <strong>AI Provider Notice:</strong> {errorMessage}
               </div>
@@ -293,13 +293,13 @@ export const CreateNotePage: React.FC = () => {
 
             {/* Contextual help for Ollama */}
             {errorMessage.toLowerCase().includes('ollama') && (
-              <div className="p-2.5 rounded bg-black/40 border border-red-900/60 font-mono text-[11px] text-red-300 space-y-1">
-                <div className="flex items-center gap-1.5 text-cyan-300 font-semibold">
+              <div className="p-2.5 rounded bg-white border border-red-200 font-mono text-[11px] text-red-900 space-y-1">
+                <div className="flex items-center gap-1.5 text-blue-700 font-semibold">
                   <Terminal className="w-3.5 h-3.5" /> Quick Windows Fix:
                 </div>
-                <div>1. Start local daemon: <code className="text-white bg-slate-800 px-1 py-0.5 rounded">ollama serve</code></div>
-                <div>2. Pull model if needed: <code className="text-white bg-slate-800 px-1 py-0.5 rounded">ollama pull {health?.ollama?.model || 'nemotron-mini'}</code></div>
-                <div>3. Or switch to offline demo in <code className="text-white">backend/.env</code>: <code className="text-white bg-slate-800 px-1 py-0.5 rounded">AI_PROVIDER=demo</code></div>
+                <div>1. Daemon is already running in background (check taskbar or run <code className="bg-slate-100 px-1 py-0.5 rounded">ollama list</code>)</div>
+                <div>2. Pull model if needed: <code className="bg-slate-100 px-1 py-0.5 rounded">ollama pull {health?.ollama?.model || 'nemotron-mini'}</code></div>
+                <div>3. Or switch to offline demo in <code className="font-semibold">backend/.env</code>: <code className="bg-slate-100 px-1 py-0.5 rounded">AI_PROVIDER=demo</code></div>
               </div>
             )}
           </div>
@@ -311,7 +311,7 @@ export const CreateNotePage: React.FC = () => {
             type="button"
             onClick={handleClear}
             disabled={isProcessing}
-            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-600 text-xs font-medium border border-slate-300 transition-colors shadow-2xs"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Clear Input</span>
@@ -321,7 +321,7 @@ export const CreateNotePage: React.FC = () => {
             type="button"
             onClick={handleGenerateStructuredNote}
             disabled={isProcessing || !inputText.trim()}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-lg shadow-cyan-500/25 transition-all hover:scale-[1.01]"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-sm shadow-blue-500/25 transition-all hover:scale-[1.01]"
           >
             {isProcessing ? (
               <>
@@ -342,26 +342,26 @@ export const CreateNotePage: React.FC = () => {
 
       {/* AI Processing Modal / Status Overlay */}
       {isProcessing && (
-        <div className="p-6 rounded-2xl bg-[#090f20] border border-cyan-500/40 shadow-xl space-y-4 animate-fade-in">
+        <div className="p-6 rounded-2xl bg-blue-50/70 border border-blue-200 shadow-xs space-y-4 animate-fade-in text-slate-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 animate-spin">
+            <div className="p-2 rounded-xl bg-blue-100 text-blue-600 animate-spin">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white">
-                {provider === 'ollama' ? 'Local Ollama & NVIDIA Model' : (provider === 'nebius' ? 'Nebius Token Factory & NVIDIA Engine' : 'Deterministic Demo Safe-Engine')}
+              <h3 className="text-sm font-semibold text-slate-900">
+                {provider === 'ollama' ? 'Local Ollama & NVIDIA Model' : (provider === 'nebius' ? 'Nebius Token Factory & NVIDIA Engine' : 'Deterministic Safe-Engine')}
               </h3>
-              <p className="text-xs text-cyan-300 font-mono mt-0.5">
+              <p className="text-xs text-blue-700 font-mono mt-0.5 font-medium">
                 {processingStep}
               </p>
             </div>
           </div>
 
-          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-            <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full w-2/3 animate-pulse" />
+          <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-2/3 animate-pulse" />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-400 font-mono">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-600 font-mono">
             <div>✓ Voice/Text Ingested</div>
             <div>⚡ {provider === 'ollama' ? 'Ollama Daemon' : (provider === 'nebius' ? 'Nebius API' : 'Demo Engine')}</div>
             <div>🧠 {provider === 'ollama' ? (health?.ollama?.model || 'nemotron-mini') : (provider === 'nebius' ? 'Nemotron-70B' : 'Fidelity Guard')}</div>

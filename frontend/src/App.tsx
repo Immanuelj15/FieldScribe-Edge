@@ -12,7 +12,7 @@ import { HistoryPage } from './pages/HistoryPage';
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen bg-[#070b18] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+      <div className="flex flex-col min-h-screen bg-slate-50 text-slate-800 selection:bg-blue-100 selection:text-blue-900">
         <DisclaimerBanner />
         <Navbar />
         <main className="flex-1">

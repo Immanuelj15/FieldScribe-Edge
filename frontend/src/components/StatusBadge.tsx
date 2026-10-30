@@ -12,7 +12,7 @@ export const StatusBadge: React.FC<Props> = ({ status, size = 'md' }) => {
 
   if (status === 'confirmed') {
     return (
-      <span className={`inline-flex items-center font-medium rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 ${sizeClasses}`}>
+      <span className={`inline-flex items-center font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 ${sizeClasses}`}>
         <CheckCircle2 className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
         <span>Confirmed</span>
       </span>
@@ -21,7 +21,7 @@ export const StatusBadge: React.FC<Props> = ({ status, size = 'md' }) => {
 
   if (status === 'reviewed') {
     return (
-      <span className={`inline-flex items-center font-medium rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 ${sizeClasses}`}>
+      <span className={`inline-flex items-center font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200 ${sizeClasses}`}>
         <Eye className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
         <span>Reviewed</span>
       </span>
@@ -29,7 +29,7 @@ export const StatusBadge: React.FC<Props> = ({ status, size = 'md' }) => {
   }
 
   return (
-    <span className={`inline-flex items-center font-medium rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 ${sizeClasses}`}>
+    <span className={`inline-flex items-center font-medium rounded-full bg-amber-50 text-amber-700 border border-amber-200 ${sizeClasses}`}>
       <Clock className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
       <span>Pending Review</span>
     </span>

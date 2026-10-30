@@ -50,24 +50,24 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-[#090e1c]/90 backdrop-blur-md border-b border-slate-800">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Brand */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
             <Activity className="w-5 h-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg text-white tracking-tight">
-                FieldScribe <span className="text-cyan-400">Edge</span>
+              <span className="font-bold text-lg text-slate-900 tracking-tight">
+                FieldScribe <span className="text-blue-600">Edge</span>
               </span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/80">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 NVIDIA 2026
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-mono hidden sm:block">
+            <p className="text-[11px] text-slate-500 font-mono hidden sm:block">
               Voice-to-Structured Clinical Records
             </p>
           </div>
@@ -83,8 +83,8 @@ export const Navbar: React.FC = () => {
                 to={item.to}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
                   active
-                    ? 'bg-slate-800 text-cyan-300 border border-slate-700'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 {item.icon && <item.icon className="w-4 h-4" />}
@@ -99,11 +99,11 @@ export const Navbar: React.FC = () => {
           {/* Engine indicator */}
           <div
             title={engineTooltip}
-            className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-xs text-slate-300 cursor-help transition-all hover:border-cyan-500/50"
+            className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs text-slate-700 cursor-help transition-all hover:border-blue-400"
           >
-            <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-slate-400">Engine:</span>
-            <span className="font-mono text-cyan-300 font-medium truncate max-w-[160px]">
+            <Cpu className="w-3.5 h-3.5 text-blue-600" />
+            <span className="text-slate-500 font-medium">Engine:</span>
+            <span className="font-mono text-blue-700 font-semibold truncate max-w-[160px]">
               {engineLabel}
             </span>
             <span
@@ -113,7 +113,7 @@ export const Navbar: React.FC = () => {
 
           <Link
             to="/create"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium text-sm shadow-md shadow-cyan-500/20 transition-all hover:shadow-cyan-500/40"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm shadow-blue-500/25 transition-all hover:shadow-blue-500/40"
           >
             <Sparkles className="w-4 h-4" />
             <span>Create Note</span>
