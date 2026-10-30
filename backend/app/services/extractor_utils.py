@@ -75,3 +75,4 @@ def normalize_extraction_payload(
         extraction_confidence=conf,
         model_used=model_used
     )
+

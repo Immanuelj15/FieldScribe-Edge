@@ -149,3 +149,4 @@ async def extract_with_ollama(source_note: str, event_timestamp: Optional[str] =
         model_used=f"Ollama Local ({model_name})",
         default_confidence=0.94
     )
+

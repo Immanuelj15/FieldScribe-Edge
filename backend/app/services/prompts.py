@@ -45,3 +45,4 @@ def build_user_prompt(source_note: str, event_timestamp: str = None) -> str:
 Timestamp context (if provided): {event_timestamp or 'Not explicitly specified'}
 
 Extract all medications, dosages, routes, procedures, timestamps, explicit observations, and identify missing documentation. Output ONLY valid JSON."""
+

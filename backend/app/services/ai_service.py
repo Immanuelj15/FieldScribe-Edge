@@ -67,3 +67,4 @@ async def get_ai_service_status() -> Dict[str, Any]:
             "mode": "Nebius Token Factory Cloud" if has_nebius_key else ("Ollama Local" if provider == "ollama" else "Local Demo Safe-Engine")
         }
     }
+
